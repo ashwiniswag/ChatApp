@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {View, Text, Pressable, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { backPressHandle } from '../utils/Common/commonFunction';
 
 const OnBoardScreen = ({navigation}) => {
   const navigate = async () => {
@@ -12,6 +13,11 @@ const OnBoardScreen = ({navigation}) => {
       console.log('Error', error);
     }
   };
+
+  useEffect(() => {
+    const backHandler = backPressHandle();
+    return () => backHandler.remove();
+  })
 
   return (
     <View style={styles.container}>

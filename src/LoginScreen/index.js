@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+import { backPressHandle } from '../utils/Common/commonFunction';
 
 const LoginScreen = ({navigation}) => {
   const [otp, setOtp] = useState('');
@@ -18,6 +19,7 @@ const LoginScreen = ({navigation}) => {
         .then(snapshot => {
           navigation.pop();
           if (snapshot.val()) {
+            console.log('Called',snapshot.val());
             navigation.navigate('GroupScreen');
           } else navigation.navigate('RegisterScreen');
         });
@@ -28,6 +30,11 @@ const LoginScreen = ({navigation}) => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
+
+  useEffect(() => {
+    const backHandler = backPressHandle();
+    return () => backHandler.remove();
+  })
 
   async function signInWithPhoneNumber(phoneNumber) {
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);

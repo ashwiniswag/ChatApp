@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {Text, View, Image, StyleSheet} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import database from '@react-native-firebase/database';
 
 const SplashScreen = ({navigation}) => {
   const navigate = async () => {
@@ -20,17 +21,27 @@ const SplashScreen = ({navigation}) => {
 
   function onAuthStateChanged(user) {
     if (user) {
-      navigation.navigate('GroupScreen');
+      database()
+        .ref(`/users/${user.uid}`)
+        .once('value')
+        .then(snapshot => {
+          if (snapshot.val()) {
+            console.log('Called',snapshot.val());
+            navigation.navigate('GroupScreen');
+          } else navigation.navigate('RegisterScreen');
+        });
+      // navigation.navigate('GroupScreen');
     } else {
       navigate();
     }
   }
 
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
       return subscriber;
     }, 1000);
+    return () => clearTimeout(timer);
   }, []);
 
   return (

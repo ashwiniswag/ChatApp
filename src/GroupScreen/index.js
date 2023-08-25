@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, FlatList, Image, Pressable, StyleSheet} from 'react-native';
+import {Text, View, FlatList, Image, Pressable, StyleSheet, Modal, BackHandler} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
+import { backPressHandle } from '../utils/Common/commonFunction';
 
 const GroupScreen = ({navigation}) => {
   const [groups, setGroups] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const renderItem = ({item}) => {
     return (
@@ -39,30 +41,58 @@ const GroupScreen = ({navigation}) => {
     }
   };
 
-  useEffect(() => {
+  const getGroupData = () => {
     database()
       .ref(`/users/${firebase.auth().currentUser.uid}/groups`)
       .on('value', snapshot => {
         snapshot.val() ? setGroups(Object.values(snapshot.val())) : null;
       });
+  }
+
+  useEffect(() => {
+    getGroupData();
+    const backHandler = backPressHandle();
+    
+    return () => backHandler.remove();
+
   }, []);
 
   return (
     <View style={styles.container}>
+      <Modal
+        transparent={true}
+        animationType='fade'
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={{width: '70%', height: '20%', borderWidth: 1, backgroundColor: '#fff', alignItems: 'center', alignSelf: 'center', justifyContent: 'space-evenly', marginTop: 300, borderRadius: 10}} >
+          <Text style={{fontSize: 18, fontWeight: '600'}} >Do you really want to log out?</Text>
+          <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-evenly'}} >
+            <Pressable style={{backgroundColor: '#A4DC5D', borderRadius: 10}} onPress={() => logout()} >
+              <Text style={{color: '#fff', fontSize: 18, fontWeight: '600', marginVertical: 5, marginHorizontal: 8}} >Yes</Text>
+            </Pressable>
+            <Pressable style={{backgroundColor: '#A4DC5D', borderRadius: 10}} onPress={() => setModalVisible(!modalVisible)} ><Text style={{color: '#fff', fontSize: 18, fontWeight: '600', marginVertical: 5, marginHorizontal: 8}} >No</Text></Pressable>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.navigationContainer}>
         <Text style={styles.navText}>Groups</Text>
-        <Pressable style={styles.logOutBtn} onPress={logout}>
+        <Pressable style={styles.logOutBtn} onPress={() => setModalVisible(true)}>
           <Image
             source={require('../utils/drawables/logout.png')}
             style={styles.logOutImage}
           />
         </Pressable>
       </View>
-      <FlatList
+      {groups.length == 0 ? <Text style={{width: '100%', textAlign: 'center', fontSize: 18, alignSelf: 'center', marginTop: 100}} >
+          Not a part of any group?{`\n Create New Group`}
+        </Text> : <FlatList
         data={groups}
         keyExtractor={item => item._id}
         renderItem={renderItem}
-      />
+      />}
       <Pressable
         onPress={() => navigation.navigate('NewGroupSCreen')}
         style={styles.newGroupBtn}>

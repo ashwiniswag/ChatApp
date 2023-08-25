@@ -19,7 +19,7 @@ const Element = ({item,setGroupMember,groupMember}) => {
                 }
              }} >
                 <Image 
-                    source={require('../../utils/drawables/group.png')}
+                    source={require('../../utils/drawables/user.png')}
                     style={styles.image} />
                 <Text style={styles.text} >{item.name}</Text>
             </Pressable>

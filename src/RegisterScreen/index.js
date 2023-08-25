@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -9,10 +9,16 @@ import {
 } from 'react-native';
 import database from '@react-native-firebase/database';
 import {firebase} from '@react-native-firebase/auth';
+import { backPressHandle } from '../utils/Common/commonFunction';
 
 const RegisterScreen = ({navigation}) => {
   const [displayName, setDisplayName] = useState('');
   const user = firebase.auth().currentUser;
+
+  useEffect(() => {
+    const backHandler = backPressHandle();
+    return () => backHandler.remove();
+  });
 
   return (
     <View style={styles.container}>
@@ -63,9 +69,6 @@ const styles = StyleSheet.create({
   logoImage: {
     height: 80,
     width: 80,
-    borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 100,
     marginTop: 40,
   },
   nameInput: {

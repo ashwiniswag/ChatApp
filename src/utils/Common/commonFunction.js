@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import database from '@react-native-firebase/database';
+import { BackHandler } from 'react-native';
 
 export const useUpdateDisplayName = () => {
 
@@ -21,4 +22,17 @@ export const useUpdateDisplayName = () => {
             return subscriber;
     },[]);
 
+}
+
+export const backPressHandle = () => {
+    const backAction = () => {
+      BackHandler.exitApp();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    );
+    return backHandler;
 }

@@ -7,7 +7,7 @@ import uuid from 'react-native-uuid';
 
 const NewGroup = ({navigation}) => {
 
-    const [data,setData] = useState([{_id: 1, displayName: 'Ashwini'},{_id: 2, displayName: 'dsgha'},{_id: 3, displayName: 'thgbvc'},{_id: 4, displayName: 'gfbbsd'},{_id: 5, displayName: 'jmghnfbf'}])
+    const [data,setData] = useState([])
     const curuser = firebase.auth().currentUser;
     const [groupName,setGroupName] = useState('');
     const [groupMember,setGroupMember] = useState([]);
@@ -54,7 +54,8 @@ const NewGroup = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <TextInput placeholder='Enter Group Name' style={styles.groupName} value={groupName} onChangeText={setGroupName} />
+            <TextInput placeholder='Enter New Group Name' style={styles.groupName} value={groupName} onChangeText={setGroupName} />
+            <Text style={styles.groupMemberText}>Choose Group Members</Text>
             <FlatList 
                 keyExtractor={item => item.id}
                 data={data}
@@ -90,5 +91,11 @@ const styles = StyleSheet.create({
     createGroupImg: {
         height: 60, 
         width: 60
+    },
+    groupMemberText: {
+        paddingLeft: 5,
+        paddingTop: 5,
+        borderTopColor: 'grey',
+        borderTopWidth: 1
     }
 });
